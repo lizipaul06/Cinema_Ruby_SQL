@@ -63,13 +63,15 @@ attr_accessor :id, :title, :price
     sum = result[0]["count"].to_i
   end
 
-#   def most_pop_screening
-#     # sql = "SELECT COUNT (*) FROM tickets INNER JOIN screenings ON tickets.screening_id = screenings.id
-#     # WHERE film_id = 1 GROUP BY(screenings.time) LIMIT 1"
-#
-#     sql = "select * from tickets  where tickets.film_id = $1
-#     GROUP BY tickets.screening_id ORDER BY count(tickets.screening_id) DESC LIMIT 1"
-#     values = [@id]
-#     return  SqlRunner.run(sql, values)
-#   end
-# end
+
+
+def most_pop_screening
+   sql = "SELECT screenings.time FROM screenings INNER JOIN tickets
+   ON tickets.screening_id = screenings.id WHERE tickets.film_id = $1
+   GROUP BY screenings.time
+   ORDER BY COUNT(*) DESC LIMIT 1"
+   values = [@id]
+   screenings =  SqlRunner.run(sql, values)
+     result = screenings.map {|screening| screening["time"] }
+ end
+end
