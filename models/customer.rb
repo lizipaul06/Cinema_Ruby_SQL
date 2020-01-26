@@ -43,7 +43,7 @@ class Customer
   end
 
   def films()
-    sql = "SELECT films.* FROM films INNER JOIN tickets ON films.id = tickets.film_id WHERE customer_id = $1"
+    sql = "SELECT * FROM films INNER JOIN tickets ON films.id = tickets.film_id WHERE customer_id = $1"
     values = [@id]
     films =  SqlRunner.run(sql, values)
     result = films.map {|film| Film.new (film)}
@@ -52,12 +52,23 @@ class Customer
 
 # Show which films a customer has booked to see, and see which customers are coming to see one film.
 
- def buy_tickets()
-   sql = "SELECT SUM (films.price) FROM films INNER JOIN tickets ON films.id = tickets.film_id WHERE customer_id = $1"
-     values = [@id]
-     result = SqlRunner.run(sql, values)
-     remaining_budget = @funds - result[0]["sum"].to_i
+ # def buy_tickets()
+ #   sql = "SELECT SUM (films.price) FROM films INNER JOIN tickets ON films.id = tickets.film_id WHERE customer_id = $1"
+ #     values = [@id]
+ #     result = SqlRunner.run(sql, values)
+ #     remaining_budget = @funds - result[0]["sum"].to_i
+ #   end
+ #
+ def buy_tickets(film, screening)
+ return nil if @funds <= film.price
+ return nil if screening.number_of_tickets <= 1
+   @funds -= film.price
+   screening.number_of_tickets -= 1
+  newticket = Ticket.new({'customer_id' => @id , 'screening_id' => screening.id})
+    newticket.save
+    return @funds
    end
+
 
  def number_of_tickets()
    sql = "SELECT COUNT (tickets.customer_id) FROM tickets INNER JOIN customers ON customers.id = tickets.customer_id WHERE customers.id = $1"
@@ -65,6 +76,11 @@ class Customer
    result =  SqlRunner.run(sql, values)
    sum = result[0]["count"].to_i
  end
+
+
+
+
+
 
 
 end

@@ -49,12 +49,27 @@ attr_accessor :id, :title, :price
     return result
   end
 
+  # def number_of_tickets()
+  #   sql = "SELECT COUNT (tickets.customer_id) FROM tickets INNER JOIN customers ON customers.id = tickets.customer_id WHERE customers.id = $1"
+  #   values = [@id]
+  #   result =  SqlRunner.run(sql, values)
+  #   sum = result[0]["count"].to_i
+  # end
+
   def number_of_customers()
-    sql = "SELECT COUNT (customers.*) FROM customers INNER JOIN tickets ON customers.id = tickets.customer_id WHERE film_id = $1"
+    sql = "SELECT COUNT (*) FROM tickets INNER JOIN screenings ON tickets.screening_id = screenings.id WHERE film_id = $1"
     values = [@id]
     result =  SqlRunner.run(sql, values)
     sum = result[0]["count"].to_i
   end
 
-
-end
+#   def most_pop_screening
+#     # sql = "SELECT COUNT (*) FROM tickets INNER JOIN screenings ON tickets.screening_id = screenings.id
+#     # WHERE film_id = 1 GROUP BY(screenings.time) LIMIT 1"
+#
+#     sql = "select * from tickets  where tickets.film_id = $1
+#     GROUP BY tickets.screening_id ORDER BY count(tickets.screening_id) DESC LIMIT 1"
+#     values = [@id]
+#     return  SqlRunner.run(sql, values)
+#   end
+# end
